@@ -1,0 +1,9 @@
+<h2>What a Heading!</h2>
+<div class="celeb-names">
+  <ul>
+    {{#each celebrities}}
+    <li><a href="/celebrities/{{id}}">{{name}}</a></li>
+    {{/each}}
+  </ul>
+</div>
+<p><a href="/celebrities/new">Add a new dude!</a></p>
