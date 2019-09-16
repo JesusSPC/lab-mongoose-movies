@@ -7,8 +7,9 @@ router.get("/celebrities", (req, res, next) => {
     .then(allCelebs => {
       res.render("celebrities/index", { celebrities: allCelebs });
     })
-    .catch(error => {
-      console.log(error);
+    .catch(function() {
+      next();
+      throw new Error("First Error.");
     });
 });
 
@@ -17,8 +18,9 @@ router.get("/celebrities/:id", (req, res, next) => {
     .then(celeb => {
       res.render("celebrities/show", { celebrity: celeb });
     })
-    .catch(error => {
-      console.log(error);
+    .catch(function() {
+      next();
+      throw new Error("This error is the worst one.");
     });
 });
 
@@ -34,12 +36,39 @@ router.post("/celebrities/new", (req, res, next) => {
   };
 
   Celebrity.create(newCeleb)
-    .then(thisGuy => {
+    .then(() => res.redirect("/celebrities"))
+    .catch(function() {
+      next();
+      throw new Error("This is the second worst one error.");
+    });
+});
+
+router.get("/celebrities/:id/delete", (req, res, next) => {
+  Celebrity.findByIdAndRemove(req.params.id)
+    .then(deletedCeleb => res.redirect("/celebrities"))
+    .catch(function() {
+      next();
+      throw new Error("This is the delete error.");
+    });
+});
+
+router.get("/celebrities/:id/edit", (req, res, next) => {
+  Celebrity.findById(req.params.id)
+    .then(celeb => res.render("celebrities/edit", {celebrity: celeb}))
+    .catch(function() {
+      next();
+      throw new Error("This is the edit error, ya know.");
+    });
+});
+
+router.post("/celebrities/:id/edit", (req, res, next) => {
+  Celebrity.findByIdAndUpdate(req.body._id, req.body)
+    .then(celeb => {
       res.redirect("/celebrities");
     })
-    .catch(error => {
-      console.log(error);
-      res.render("celebrities/new");
+    .catch(function() {
+      next();
+      throw new Error("Error editing dudes.");
     });
 });
 
